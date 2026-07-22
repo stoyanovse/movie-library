@@ -2,6 +2,7 @@ package org.alphatrack.movielibrary.services;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.alphatrack.movielibrary.dtos.MovieRequestDto;
 import org.alphatrack.movielibrary.dtos.MovieUpdateDto;
 import org.alphatrack.movielibrary.dtos.filters.MovieFilterOptions;
@@ -19,11 +20,13 @@ import java.util.List;
 @Service
 public class MovieServiceImpl implements MovieService {
 
-    private MovieRepository movieRepository;
+    private final MovieRepository movieRepository;
+    private final OmdbIntegrationService omdbIntegrationService;
 
     @Autowired
-    public MovieServiceImpl(MovieRepository movieRepository) {
+    public MovieServiceImpl(MovieRepository movieRepository, OmdbIntegrationService omdbIntegrationService) {
         this.movieRepository = movieRepository;
+        this.omdbIntegrationService = omdbIntegrationService;
     }
 
     @Override
@@ -41,6 +44,7 @@ public class MovieServiceImpl implements MovieService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Movie with id %d not found", id)));
     }
 
+    @Transactional
     @Override
     public Movie update(Long id, MovieUpdateDto movieUpdateDto, User currentUser) {
         Movie currentMovie = movieRepository.findById(id)
@@ -60,6 +64,7 @@ public class MovieServiceImpl implements MovieService {
         return movieRepository.save(currentMovie);
     }
 
+    @Transactional
     @Override
     public Movie create(MovieRequestDto movieRequestDto, User currentUser) {
 
@@ -76,9 +81,13 @@ public class MovieServiceImpl implements MovieService {
                    .rating(null)
                    .build();
 
-           return movieRepository.save(movie);
+           Movie savedMovie = movieRepository.save(movie);
+           omdbIntegrationService.fetchAndSaveRating(savedMovie.getId(), savedMovie.getTitle());
+
+           return savedMovie;
     }
 
+    @Transactional
     @Override
     public void delete(Long id, User currentUser) {
         Movie movieToDelete = movieRepository.findById(id)

@@ -2,6 +2,7 @@ package org.alphatrack.movielibrary.services;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.alphatrack.movielibrary.dtos.UserRegisterDto;
 import org.alphatrack.movielibrary.dtos.UserUpdateDto;
 import org.alphatrack.movielibrary.dtos.filters.UserFilterOptions;
@@ -36,6 +37,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format("User with id %d not found", id)));
     }
 
+    @Transactional
     @Override
     public User promoteToAdmin(Long id, User currentUser) {
         User user = userRepository.getUserById(id)
@@ -50,6 +52,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
     @Override
     public User update(Long id, UserUpdateDto userUpdateDto, User currentUser) {
         boolean isOwner = currentUser.getId().equals(id);
@@ -69,6 +72,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(currentUser);
     }
 
+    @Transactional
     @Override
     public User create(UserRegisterDto userRegisterDto) {
         if (userRepository.findUserByUsername(userRegisterDto.getUsername()).isPresent()) {
@@ -91,6 +95,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(newUser);
     }
 
+    @Transactional
     @Override
     public void delete(Long id, User currentUser) {
         User user = userRepository.getUserById(id)
