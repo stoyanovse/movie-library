@@ -12,12 +12,12 @@ public interface MovieService {
 
     List<Movie> getAll(MovieFilterOptions movieFilterOptions);
 
-    Movie getById(Long id);
+    Movie getById(Long id, User currentUser);
 
     Movie update(Long id, MovieUpdateDto movieUpdateDto, User currentUser);
 
     Movie create(MovieRequestDto movieRequestDto, User currentUser);
 
-    void delete(MovieRequestDto movieRequestDto, User currentUser);
+    void delete(Long id, User currentUser);
 
 }
