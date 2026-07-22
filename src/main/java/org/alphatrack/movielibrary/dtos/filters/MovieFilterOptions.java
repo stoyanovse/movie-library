@@ -8,12 +8,12 @@ import java.util.Optional;
 @Getter
 public class MovieFilterOptions {
 
-    private Optional<String> title;
-    private Optional<String> director;
-    private Optional<Integer> releaseYear;
-    private Optional<Double> rating;
-    private Optional<String> sortBy;
-    private Optional<String> sortOrder;
+    private final Optional<String> title;
+    private final Optional<String> director;
+    private final Optional<Integer> releaseYear;
+    private final Optional<Double> rating;
+    private final Optional<String> sortBy;
+    private final Optional<String> sortOrder;
 
     @Builder
     public MovieFilterOptions(String title,

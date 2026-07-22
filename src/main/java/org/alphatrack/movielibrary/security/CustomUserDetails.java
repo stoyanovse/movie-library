@@ -1,7 +1,6 @@
 package org.alphatrack.movielibrary.security;
 
 import org.alphatrack.movielibrary.models.User;
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
