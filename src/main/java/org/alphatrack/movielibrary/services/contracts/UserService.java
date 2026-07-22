@@ -12,6 +12,7 @@ public interface UserService {
     List<User> getAll(UserFilterOptions userFilterOptions);
 
     User getById(Long id);
+    User promoteToAdmin(Long id, User currentUser);
     User update(Long id, UserUpdateDto userUpdateDto, User currentUser);
     User create(UserRegisterDto userRegisterDto);
     void delete(Long id, User currentUser);

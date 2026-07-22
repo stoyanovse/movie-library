@@ -53,7 +53,6 @@ public class MovieServiceImpl implements MovieService {
             throw new AccessDeniedException(String.format("You are not authorized to update a movie with id %d", id));
         }
 
-        currentMovie.setRating(movieUpdateDto.getRating());
         currentMovie.setReleaseYear(movieUpdateDto.getReleaseYear());
         currentMovie.setDirector(movieUpdateDto.getDirector());
         currentMovie.setTitle(movieUpdateDto.getTitle());
@@ -66,7 +65,7 @@ public class MovieServiceImpl implements MovieService {
 
         if (movieRepository.existsMovieByDirectorAndTitle(movieRequestDto.getDirector(), movieRequestDto.getTitle())) {
             throw new EntityExistsException(
-                    String.format("Movie with title %s and director %s already exists", movieRequestDto.getTitle(), movieRequestDto.getDirector());
+                    String.format("Movie with title %s and director %s already exists", movieRequestDto.getTitle(), movieRequestDto.getDirector()));
         }
 
            Movie movie = Movie.builder()

@@ -37,6 +37,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User promoteToAdmin(Long id, User currentUser) {
+        User user = userRepository.getUserById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("User with id %d not found", id)));
+
+        if (!currentUser.getRole().equals(Role.ADMIN)) {
+            throw new AccessDeniedException("Only admin can promote a user");
+        }
+
+        user.setRole(Role.ADMIN);
+        return userRepository.save(user);
+    }
+
+    @Override
     public User update(Long id, UserUpdateDto userUpdateDto, User currentUser) {
         boolean isOwner = currentUser.getId().equals(id);
 
@@ -58,10 +72,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User create(UserRegisterDto userRegisterDto) {
         if (userRepository.findUserByUsername(userRegisterDto.getUsername()).isPresent()) {
-            throw new EntityExistsException(String.format("User with username %s exists", userRegisterDto.getUsername());
+            throw new EntityExistsException(String.format("User with username %s exists", userRegisterDto.getUsername()));
         }
         if (userRepository.findUserByEmail(userRegisterDto.getEmail()).isPresent()) {
-            throw new EntityExistsException(String.format("User with email %s exists", userRegisterDto.getEmail());
+            throw new EntityExistsException(String.format("User with email %s exists", userRegisterDto.getEmail()));
         }
 
         User newUser = User.builder()
@@ -79,7 +93,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(Long id, User currentUser) {
-        User user = userRepository.getUserById(id);
+        User user = userRepository.getUserById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("User with id %d not found", id)
+                ));
 
         boolean isOwner = currentUser.getId().equals(user.getId());
         boolean isAdmin = currentUser.getRole().equals(Role.ADMIN);
