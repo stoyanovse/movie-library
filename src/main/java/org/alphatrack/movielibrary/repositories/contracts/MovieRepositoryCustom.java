@@ -2,10 +2,9 @@ package org.alphatrack.movielibrary.repositories.contracts;
 
 import org.alphatrack.movielibrary.dtos.filters.MovieFilterOptions;
 import org.alphatrack.movielibrary.models.Movie;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface MovieRepository extends JpaRepository<Movie, Long>,MovieRepositoryCustom {
-
+public interface MovieRepositoryCustom {
+    List<Movie> findAll(MovieFilterOptions movieFilterOptions);
 }
