@@ -8,8 +8,8 @@ import lombok.*;
 @Setter
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
 public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,11 +25,6 @@ public class Movie {
 
     @Column(nullable = false)
     private Integer releaseYear;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false,
-    foreignKey = @ForeignKey(name = "fk_movie_user_id"))
-    private User addedBy;
 
     @Column
     private Double rating;

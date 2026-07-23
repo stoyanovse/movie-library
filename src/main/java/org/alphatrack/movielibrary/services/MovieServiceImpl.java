@@ -11,6 +11,7 @@ import org.alphatrack.movielibrary.models.User;
 import org.alphatrack.movielibrary.models.enums.Role;
 import org.alphatrack.movielibrary.repositories.contracts.MovieRepository;
 import org.alphatrack.movielibrary.services.contracts.MovieService;
+import org.alphatrack.movielibrary.utils.mappers.MovieMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -22,11 +23,13 @@ public class MovieServiceImpl implements MovieService {
 
     private final MovieRepository movieRepository;
     private final OmdbIntegrationService omdbIntegrationService;
+    private final MovieMapper movieMapper;
 
     @Autowired
-    public MovieServiceImpl(MovieRepository movieRepository, OmdbIntegrationService omdbIntegrationService) {
+    public MovieServiceImpl(MovieRepository movieRepository, OmdbIntegrationService omdbIntegrationService,MovieMapper movieMapper) {
         this.movieRepository = movieRepository;
         this.omdbIntegrationService = omdbIntegrationService;
+        this.movieMapper = movieMapper;
     }
 
     @Override
@@ -50,10 +53,7 @@ public class MovieServiceImpl implements MovieService {
         Movie currentMovie = movieRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Movie with id %d not found", id)));
 
-        boolean isOwner = currentMovie.getAddedBy().getUsername().equals(currentUser.getUsername());
-        boolean isAdmin = currentUser.getRole().equals(Role.ADMIN);
-
-        if (!isAdmin && !isOwner) {
+        if (!isAdmin(currentUser)) {
             throw new AccessDeniedException(String.format("You are not authorized to update a movie with id %d", id));
         }
 
@@ -68,19 +68,16 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public Movie create(MovieRequestDto movieRequestDto, User currentUser) {
 
+        if (!isAdmin(currentUser)) {
+            throw new AccessDeniedException("You are not authorized to add movies in the library");
+        }
+
         if (movieRepository.existsMovieByDirectorAndTitle(movieRequestDto.getDirector(), movieRequestDto.getTitle())) {
             throw new EntityExistsException(
                     String.format("Movie with title %s and director %s already exists", movieRequestDto.getTitle(), movieRequestDto.getDirector()));
         }
 
-           Movie movie = Movie.builder()
-                   .title(movieRequestDto.getTitle())
-                   .director(movieRequestDto.getDirector())
-                   .releaseYear(movieRequestDto.getReleaseYear())
-                   .addedBy(currentUser)
-                   .rating(null)
-                   .build();
-
+           Movie movie = movieMapper.dtoToMovie(movieRequestDto);
            Movie savedMovie = movieRepository.save(movie);
            omdbIntegrationService.fetchAndSaveRating(savedMovie.getId(), savedMovie.getTitle());
 
@@ -93,14 +90,15 @@ public class MovieServiceImpl implements MovieService {
         Movie movieToDelete = movieRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Movie with id %d not found", id)));
 
-        boolean isOwner = movieToDelete.getAddedBy().getUsername().equals(currentUser.getUsername());
-        boolean isAdmin = currentUser.getRole().equals(Role.ADMIN);
-
-        if (!isAdmin && !isOwner) {
+        if (!isAdmin(currentUser)) {
             throw new AccessDeniedException(String.format("You are not authorized to delete a movie with id %d", id));
         }
 
-        movieToDelete.getAddedBy().getMovies().remove(movieToDelete);
+
         movieRepository.delete(movieToDelete);
+    }
+
+    private boolean isAdmin(User currentUser) {
+        return currentUser.getRole().equals(Role.ADMIN);
     }
 }

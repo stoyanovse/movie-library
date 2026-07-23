@@ -2,11 +2,13 @@ package org.alphatrack.movielibrary.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Setter
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserUpdateDto {
 
     @NotBlank(message = "First name cannot be empty")

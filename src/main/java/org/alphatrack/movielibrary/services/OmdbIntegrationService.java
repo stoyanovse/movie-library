@@ -38,8 +38,8 @@ public class OmdbIntegrationService {
                             .build())
                     .retrieve()
                     .body(OmdbResponseDto.class);
-            if (responseDto != null && "True".equals(responseDto.getResponse())
-            && responseDto.getImdbRating() != null && !"N/A".equals(responseDto.getImdbRating())) {
+            if (responseDto != null && responseDto.getResponse().equalsIgnoreCase("True")
+            && responseDto.getImdbRating() != null && !responseDto.getImdbRating().equalsIgnoreCase("N/A")) {
                 Double parsedRating = Double.parseDouble(responseDto.getImdbRating());
 
                 movieRepository.findById(movieId).ifPresent(movie -> {

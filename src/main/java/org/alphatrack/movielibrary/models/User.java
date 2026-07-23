@@ -4,16 +4,13 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.alphatrack.movielibrary.models.enums.Role;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Entity
 @Table(name = "users")
 @Setter
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +30,7 @@ public class User {
     @Column
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column
     private Role role;
 
@@ -44,10 +42,6 @@ public class User {
 
     @Column
     private Boolean isEnabled;
-
-    @OneToMany(mappedBy = "addedBy")
-    @Builder.Default
-    private Set<Movie> movies = new HashSet<>();
 
 
 }

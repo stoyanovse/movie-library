@@ -1,10 +1,10 @@
 package org.alphatrack.movielibrary.dtos.filters;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.Optional;
 @Getter
+
 public class UserFilterOptions {
     private final Optional<String> username;
     private final Optional<String> firstName;

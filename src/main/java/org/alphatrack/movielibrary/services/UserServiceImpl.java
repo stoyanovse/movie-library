@@ -10,8 +10,8 @@ import org.alphatrack.movielibrary.models.User;
 import org.alphatrack.movielibrary.models.enums.Role;
 import org.alphatrack.movielibrary.repositories.contracts.UserRepository;
 import org.alphatrack.movielibrary.services.contracts.UserService;
+import org.alphatrack.movielibrary.utils.mappers.UserMapper;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,15 +19,28 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.userMapper = userMapper;
     }
 
     @Override
     public List<User> getAll(UserFilterOptions userFilterOptions) {
+        return userRepository.findAll(userFilterOptions);
+    }
+
+    @Override
+    public List<User> search(UserFilterOptions userFilterOptions) {
+
+        if (userFilterOptions.getUsername().isEmpty() &&
+                userFilterOptions.getFirstName().isEmpty() &&
+                userFilterOptions.getLastName().isEmpty()) {
+
+            throw new IllegalArgumentException("You must provide at least one search parameter.");
+        }
+
         return userRepository.findAll(userFilterOptions);
     }
 
@@ -48,6 +61,11 @@ public class UserServiceImpl implements UserService {
             throw new AccessDeniedException("Only admin can promote a user");
         }
 
+        if (!user.getIsEnabled()) {
+            throw new AccessDeniedException("You cannot promote deleted user");
+        }
+
+        user.setIsBlocked(false);
         user.setRole(Role.ADMIN);
         return userRepository.save(user);
     }
@@ -82,16 +100,7 @@ public class UserServiceImpl implements UserService {
             throw new EntityExistsException(String.format("User with email %s exists", userRegisterDto.getEmail()));
         }
 
-        User newUser = User.builder()
-                .username(userRegisterDto.getUsername())
-                .firstName(userRegisterDto.getFirstName())
-                .lastName(userRegisterDto.getLastName())
-                .password(passwordEncoder.encode(userRegisterDto.getPassword()))
-                .email(userRegisterDto.getEmail())
-                .role(Role.USER)
-                .isBlocked(false)
-                .build();
-
+        User newUser = userMapper.dtoToUser(userRegisterDto);
         return userRepository.save(newUser);
     }
 

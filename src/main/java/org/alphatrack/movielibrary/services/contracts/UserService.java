@@ -10,6 +10,7 @@ import java.util.List;
 public interface UserService {
 
     List<User> getAll(UserFilterOptions userFilterOptions);
+    List<User> search(UserFilterOptions userFilterOptions);
 
     User getById(Long id);
     User promoteToAdmin(Long id, User currentUser);

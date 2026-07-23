@@ -1,9 +1,9 @@
 package org.alphatrack.movielibrary.dtos;
 
-import jakarta.persistence.Transient;
+
 import jakarta.validation.constraints.*;
 import lombok.*;
-import org.alphatrack.movielibrary.models.User;
+
 
 @Setter
 @Getter

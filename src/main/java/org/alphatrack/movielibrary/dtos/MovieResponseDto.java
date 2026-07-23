@@ -5,6 +5,8 @@ import lombok.*;
 @Setter
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MovieResponseDto {
 
     private Long id;
@@ -14,4 +16,6 @@ public class MovieResponseDto {
     private String director;
 
     private Integer releaseYear;
+
+    private Double rating;
 }
