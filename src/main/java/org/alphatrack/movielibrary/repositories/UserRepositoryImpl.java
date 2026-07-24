@@ -39,19 +39,9 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
         userFilterOptions.getLastName().ifPresent(lastName ->
                 predicates.add(cb.like(userRoot.get("lastName"), "%" + lastName + "%")));
 
-        userFilterOptions.getEmail().ifPresent(email ->
-                predicates.add(cb.like(userRoot.get("email"), "%" + email + "%")));
 
         cq.where(cb.and(predicates.toArray(new Predicate[0])));
 
-        userFilterOptions.getSortBy().ifPresent(sortBy -> {
-            String sortOrder = userFilterOptions.getSortOrder().orElse("asc");
-            if (sortOrder.equalsIgnoreCase("desc")) {
-                cq.orderBy(cb.desc(userRoot.get((sortBy))));
-            } else {
-                cq.orderBy(cb.asc(userRoot.get(sortBy)));
-            }
-        });
 
         return entityManager.createQuery(cq).getResultList();
     }

@@ -13,7 +13,7 @@ public class OmdbResponseDto {
     @JsonProperty("imdbRating")
     private String imdbRating;
 
-    @JsonProperty("response")
+    @JsonProperty("Response")
     private String response;
 
     @JsonProperty("Error")

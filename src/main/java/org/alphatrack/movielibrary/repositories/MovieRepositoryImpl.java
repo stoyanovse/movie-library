@@ -45,14 +45,6 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
 
             cq.where(cb.and(predicates.toArray(new Predicate[0])));
 
-            movieFilterOptions.getSortBy().ifPresent(sortBy -> {
-                String sortOrder = movieFilterOptions.getSortOrder().orElse("asc");
-                if (sortOrder.equalsIgnoreCase("desc")) {
-                    cq.orderBy(cb.desc(userRoot.get((sortBy))));
-                } else {
-                    cq.orderBy(cb.asc(userRoot.get(sortBy)));
-                }
-            });
 
             return entityManager.createQuery(cq).getResultList();
 

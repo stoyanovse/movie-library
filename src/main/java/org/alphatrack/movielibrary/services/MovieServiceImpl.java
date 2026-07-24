@@ -15,6 +15,8 @@ import org.alphatrack.movielibrary.utils.mappers.MovieMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 
@@ -79,7 +81,13 @@ public class MovieServiceImpl implements MovieService {
 
            Movie movie = movieMapper.dtoToMovie(movieRequestDto);
            Movie savedMovie = movieRepository.save(movie);
-           omdbIntegrationService.fetchAndSaveRating(savedMovie.getId(), savedMovie.getTitle());
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                omdbIntegrationService.fetchAndSaveRating(savedMovie.getId(), savedMovie.getTitle());
+            }
+        });
 
            return savedMovie;
     }

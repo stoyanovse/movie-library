@@ -12,8 +12,7 @@ public class MovieFilterOptions {
     private final Optional<String> director;
     private final Optional<Integer> releaseYear;
     private final Optional<Double> rating;
-    private final Optional<String> sortBy;
-    private final Optional<String> sortOrder;
+
 
     @Builder
     public MovieFilterOptions(String title,
@@ -26,7 +25,6 @@ public class MovieFilterOptions {
         this.director = Optional.ofNullable(director);
         this.releaseYear = Optional.ofNullable(releaseYear);
         this.rating = Optional.ofNullable(rating);
-        this.sortBy = Optional.ofNullable(sortBy);
-        this.sortOrder = Optional.ofNullable(sortOrder);
+
     }
 }

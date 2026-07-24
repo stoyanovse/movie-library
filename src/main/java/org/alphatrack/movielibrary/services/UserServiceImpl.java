@@ -34,10 +34,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> search(UserFilterOptions userFilterOptions) {
 
-        if (userFilterOptions.getUsername().isEmpty() &&
-                userFilterOptions.getFirstName().isEmpty() &&
-                userFilterOptions.getLastName().isEmpty()) {
+        boolean noUsername = userFilterOptions.getUsername().orElse("").isBlank();
+        boolean noFirstName = userFilterOptions.getFirstName().orElse("").isBlank();
+        boolean noLastName = userFilterOptions.getLastName().orElse("").isBlank();
 
+        if (noUsername && noFirstName && noLastName) {
             throw new IllegalArgumentException("You must provide at least one search parameter.");
         }
 
