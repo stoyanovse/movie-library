@@ -14,10 +14,8 @@ public class UserFilterOptions {
     public UserFilterOptions(
             String username,
             String firstName,
-            String lastName,
-            String email,
-            String sortBy,
-            String sortOrder
+            String lastName
+
     ) {
         this.username = Optional.ofNullable(username);
         this.firstName = Optional.ofNullable(firstName);

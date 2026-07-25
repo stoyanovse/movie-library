@@ -23,6 +23,12 @@ A secure, robust Spring Boot RESTful API for managing a digital movie library. T
 
 [![Database Schema](docs/images/schema.png)](docs/images/schema.png)
 
+## Documentation & Architecture
+For a deep dive into the technical reasoning behind the asynchronous API integration,
+thread management, and security implementation,
+please read the [Architecture Decision Record (ADR)](docs/0001-movie-enrichment-architecture.md).
+
+
 ## Getting Started
 
 ### Prerequisites

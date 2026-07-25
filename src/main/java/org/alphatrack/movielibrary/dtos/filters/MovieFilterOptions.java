@@ -18,9 +18,8 @@ public class MovieFilterOptions {
     public MovieFilterOptions(String title,
                               String director,
                               Integer releaseYear,
-                              Double rating,
-                              String sortBy,
-                              String sortOrder) {
+                              Double rating
+                              ) {
         this.title = Optional.ofNullable(title);
         this.director = Optional.ofNullable(director);
         this.releaseYear = Optional.ofNullable(releaseYear);
