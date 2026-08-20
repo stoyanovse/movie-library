@@ -17,12 +17,17 @@ import java.time.LocalDateTime;
 @RestControllerAdvice(annotations = RestController.class)
 public class GlobalExceptionHandler {
 
+    public static final String NOT_FOUND = "Not Found";
+    public static final String CONFLICT = "Conflict";
+    public static final String FORBIDDEN = "Forbidden";
+    public static final String BAD_REQUEST = "Bad Request";
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleEntityNotFoundException(EntityNotFoundException e, HttpServletRequest path) {
 
         ErrorResponseDto error = ErrorResponseDto.builder()
                 .statusCode(HttpStatus.NOT_FOUND.value())
-                .error("Not Found")
+                .error(NOT_FOUND)
                 .message(e.getMessage())
                 .path(path.getRequestURI())
                 .timeStamp(LocalDateTime.now())
@@ -36,7 +41,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponseDto error = ErrorResponseDto.builder()
                 .statusCode(HttpStatus.CONFLICT.value())
-                .error("Conflict")
+                .error(CONFLICT)
                 .message(e.getMessage())
                 .path(path.getRequestURI())
                 .timeStamp(LocalDateTime.now())
@@ -51,7 +56,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponseDto error = ErrorResponseDto.builder()
                 .statusCode(HttpStatus.FORBIDDEN.value())
-                .error("Forbidden")
+                .error(FORBIDDEN)
                 .message(e.getMessage())
                 .path(path.getRequestURI())
                 .timeStamp(LocalDateTime.now())
@@ -65,7 +70,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponseDto error = ErrorResponseDto.builder()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .error("Bad Request")
+                .error(BAD_REQUEST)
                 .message(e.getMessage())
                 .path(path.getRequestURI())
                 .timeStamp(LocalDateTime.now())

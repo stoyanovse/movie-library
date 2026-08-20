@@ -23,6 +23,12 @@ import java.util.List;
 @Service
 public class MovieServiceImpl implements MovieService {
 
+    public static final String MOVIE_WITH_ID_NOT_FOUND = "Movie with id %d not found";
+    public static final String CURRENTLY_BLOCKED = "You are currently blocked and have restricted access";
+    public static final String NOT_AUTHORIZED_TO_UPDATE_A_MOVIE = "You are not authorized to update a movie with id %d";
+    public static final String NOT_AUTHORIZED_TO_ADD_MOVIES_IN_THE_LIBRARY = "You are not authorized to add movies in the library";
+    public static final String NOT_AUTHORIZED_TO_DELETE_A_MOVIE = "You are not authorized to delete a movie with id %d";
+    public static final String MOVIE_EXISTS = "Movie with title %s and director %s already exists";
     private final MovieRepository movieRepository;
     private final OmdbIntegrationService omdbIntegrationService;
     private final MovieMapper movieMapper;
@@ -42,21 +48,22 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public Movie getById(Long id, User currentUser) {
         if (currentUser.getIsBlocked()) {
-            throw new AccessDeniedException("You are currently blocked and have restricted access");
+            throw new AccessDeniedException(CURRENTLY_BLOCKED);
         }
 
         return movieRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Movie with id %d not found", id)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(MOVIE_WITH_ID_NOT_FOUND, id)));
     }
+
 
     @Transactional
     @Override
     public Movie update(Long id, MovieUpdateDto movieUpdateDto, User currentUser) {
         Movie currentMovie = movieRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Movie with id %d not found", id)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(MOVIE_WITH_ID_NOT_FOUND, id)));
 
         if (!isAdmin(currentUser)) {
-            throw new AccessDeniedException(String.format("You are not authorized to update a movie with id %d", id));
+            throw new AccessDeniedException(String.format(NOT_AUTHORIZED_TO_UPDATE_A_MOVIE, id));
         }
 
         currentMovie.setReleaseYear(movieUpdateDto.getReleaseYear());
@@ -71,12 +78,12 @@ public class MovieServiceImpl implements MovieService {
     public Movie create(MovieRequestDto movieRequestDto, User currentUser) {
 
         if (!isAdmin(currentUser)) {
-            throw new AccessDeniedException("You are not authorized to add movies in the library");
+            throw new AccessDeniedException(NOT_AUTHORIZED_TO_ADD_MOVIES_IN_THE_LIBRARY);
         }
 
         if (movieRepository.existsMovieByDirectorAndTitle(movieRequestDto.getDirector(), movieRequestDto.getTitle())) {
             throw new EntityExistsException(
-                    String.format("Movie with title %s and director %s already exists", movieRequestDto.getTitle(), movieRequestDto.getDirector()));
+                    String.format(MOVIE_EXISTS, movieRequestDto.getTitle(), movieRequestDto.getDirector()));
         }
 
            Movie movie = movieMapper.dtoToMovie(movieRequestDto);
@@ -96,10 +103,10 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public void delete(Long id, User currentUser) {
         Movie movieToDelete = movieRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Movie with id %d not found", id)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(MOVIE_WITH_ID_NOT_FOUND, id)));
 
         if (!isAdmin(currentUser)) {
-            throw new AccessDeniedException(String.format("You are not authorized to delete a movie with id %d", id));
+            throw new AccessDeniedException(String.format(NOT_AUTHORIZED_TO_DELETE_A_MOVIE, id));
         }
 
 

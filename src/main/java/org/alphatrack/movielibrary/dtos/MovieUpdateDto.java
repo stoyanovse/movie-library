@@ -20,7 +20,7 @@ public class MovieUpdateDto {
     private String director;
 
     @NotNull
-    @Min(value = 5, message = "Release year cannot be earlier than 1888")
+    @Min(value = 1888, message = "Release year cannot be earlier than 1888")
     @Max(value = 2030, message = "Release year is too far in the future")
     private Integer releaseYear;
 }

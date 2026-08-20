@@ -13,6 +13,10 @@ import org.springframework.web.client.RestClient;
 @Service
 public class OmdbIntegrationService {
 
+    public static final String RATING_FETCH_FOR_MOVIE = "Starting async rating fetch for movie: {}";
+    public static final String ADDED_RATING_TO_MOVIE = "Successfully added rating {} to movie {}";
+    public static final String NOT_FOUND_ON_OMDB_OR_NO_RATING_AVAILABLE_FOR = "Movie not found on OMDb or no rating available for: {}";
+    public static final String FAILED_TO_FETCH_RATING_FOR_MOVIE_REASON = "Failed to fetch rating for movie: {}. Reason: {}";
     private final RestClient restClient;
     private final MovieRepository movieRepository;
     private final String apiKey;
@@ -26,10 +30,10 @@ public class OmdbIntegrationService {
         this.movieRepository = movieRepository;
         this.apiKey = apiKey;
     }
-
+    //magics strings constants
     @Async
     public void fetchAndSaveRating(Long movieId, String title) {
-        log.info("Starting async rating fetch for movie: {}", title);
+        log.info(RATING_FETCH_FOR_MOVIE, title);
         try {
             OmdbResponseDto responseDto = restClient.get()
                     .uri(uriBuilder -> uriBuilder
@@ -45,13 +49,13 @@ public class OmdbIntegrationService {
                 movieRepository.findById(movieId).ifPresent(movie -> {
                     movie.setRating(parsedRating);
                     movieRepository.save(movie);
-                    log.info("Successfully added rating {} to movie {}", parsedRating, title);
+                    log.info(ADDED_RATING_TO_MOVIE, parsedRating, title);
                 });
             } else {
-                log.warn("Movie not found on OMDb or no rating available for: {}", title);
+                log.warn(NOT_FOUND_ON_OMDB_OR_NO_RATING_AVAILABLE_FOR, title);
             }
         } catch (Exception e) {
-            log.error("Failed to fetch rating for movie: {}. Reason: {}" , title, e.getMessage());
+            log.error(FAILED_TO_FETCH_RATING_FOR_MOVIE_REASON, title, e.getMessage());
         }
     }
 }

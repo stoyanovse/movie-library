@@ -18,6 +18,14 @@ import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
+    public static final String PROVIDE_SEARCH_PARAMETER = "You must provide at least one search parameter.";
+    public static final String USER_NOT_FOUND = "User with id %d not found";
+    public static final String ONLY_ADMIN_CAN_PROMOTE_A_USER = "Only admin can promote a user";
+    public static final String CANNOT_PROMOTE_DELETED_USER = "You cannot promote deleted user";
+    public static final String OWNER_CAN_UPDATE_ITS_PROFILE = "Only the owner can update its profile";
+    public static final String USER_WITH_USERNAME_EXISTS = "User with username %s exists";
+    public static final String USER_WITH_EMAIL_EXISTS = "User with email %s exists";
+    public static final String NOT_AUTHORIZED_TO_DELETE_THIS_PROFILE = "You are not authorized to delete this profile";
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
@@ -39,7 +47,7 @@ public class UserServiceImpl implements UserService {
         boolean noLastName = userFilterOptions.getLastName().orElse("").isBlank();
 
         if (noUsername && noFirstName && noLastName) {
-            throw new IllegalArgumentException("You must provide at least one search parameter.");
+            throw new IllegalArgumentException(PROVIDE_SEARCH_PARAMETER);
         }
 
         return userRepository.findAll(userFilterOptions);
@@ -48,22 +56,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("User with id %d not found", id)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(USER_NOT_FOUND, id)));
     }
 
     @Transactional
     @Override
     public User promoteToAdmin(Long id, User currentUser) {
-        User user = userRepository.getUserById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format("User with id %d not found", id)));
+        User user = getById(id);
 
         if (!currentUser.getRole().equals(Role.ADMIN)) {
-            throw new AccessDeniedException("Only admin can promote a user");
+            throw new AccessDeniedException(ONLY_ADMIN_CAN_PROMOTE_A_USER);
         }
 
         if (!user.getIsEnabled()) {
-            throw new AccessDeniedException("You cannot promote deleted user");
+            throw new AccessDeniedException(CANNOT_PROMOTE_DELETED_USER);
         }
 
         user.setIsBlocked(false);
@@ -76,8 +82,9 @@ public class UserServiceImpl implements UserService {
     public User update(Long id, UserUpdateDto userUpdateDto, User currentUser) {
         boolean isOwner = currentUser.getId().equals(id);
 
+
         if (!isOwner) {
-            throw new AccessDeniedException("Only the owner can update its profile");
+            throw new AccessDeniedException(OWNER_CAN_UPDATE_ITS_PROFILE);
         }
 
         if (userUpdateDto.getFirstName() != null) {
@@ -95,10 +102,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User create(UserRegisterDto userRegisterDto) {
         if (userRepository.findUserByUsername(userRegisterDto.getUsername()).isPresent()) {
-            throw new EntityExistsException(String.format("User with username %s exists", userRegisterDto.getUsername()));
+            throw new EntityExistsException(String.format(USER_WITH_USERNAME_EXISTS, userRegisterDto.getUsername()));
         }
         if (userRepository.findUserByEmail(userRegisterDto.getEmail()).isPresent()) {
-            throw new EntityExistsException(String.format("User with email %s exists", userRegisterDto.getEmail()));
+            throw new EntityExistsException(String.format(USER_WITH_EMAIL_EXISTS, userRegisterDto.getEmail()));
         }
 
         User newUser = userMapper.dtoToUser(userRegisterDto);
@@ -108,17 +115,15 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void delete(Long id, User currentUser) {
-        User user = userRepository.getUserById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format("User with id %d not found", id)
-                ));
+        User user = getById(id);
 
         boolean isOwner = currentUser.getId().equals(user.getId());
         boolean isAdmin = currentUser.getRole().equals(Role.ADMIN);
 
         if (!isAdmin && !isOwner) {
-            throw new AccessDeniedException("You are not authorized to delete this profile");
+            throw new AccessDeniedException(NOT_AUTHORIZED_TO_DELETE_THIS_PROFILE);
         }
+
         user.setIsEnabled(false);
         userRepository.save(user);
     }
