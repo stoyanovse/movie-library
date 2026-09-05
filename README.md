@@ -46,7 +46,7 @@ Then:
 docker compose up --build
 ```
 
-The API will be available at **http://localhost:8080**, with interactive docs at **http://localhost:8080/swagger-ui/index.html**.
+The API will be available with interactive docs at **http://localhost:8080/swagger-ui/index.html**.
 
 On first run, the app seeds a few demo users and movies, then automatically triggers the real asynchronous OMDb rating fetch for each seeded movie — so within a few seconds of startup you'll see ratings appear, demonstrating the app's core feature end-to-end.
 
