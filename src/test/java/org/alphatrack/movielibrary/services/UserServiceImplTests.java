@@ -81,7 +81,7 @@ public class UserServiceImplTests {
     @Test
     public void getById_Should_Throw_WhenUserNotFound() {
         Mockito.when(mockUser.getId())
-                        .thenReturn(1L);
+                .thenReturn(1L);
         Assertions.assertThrows(EntityNotFoundException.class, () -> userService.getById(mockUser.getId()));
     }
 
@@ -90,7 +90,7 @@ public class UserServiceImplTests {
         Mockito.when(mockUser.getId())
                 .thenReturn(1L);
         Mockito.when(userRepository.findById(1L))
-                        .thenReturn(Optional.of(mockUser));
+                .thenReturn(Optional.of(mockUser));
 
         User result = userService.getById(1L);
 
@@ -110,8 +110,8 @@ public class UserServiceImplTests {
     public void promoteToAdmin_Should_Throw_WhenUserIsNotAdmin() {
         User user = new User();
         user.setRole(Role.USER);
-        Mockito.when(userRepository.getUserById(1L))
-                        .thenReturn(Optional.of(mockUser));
+        Mockito.when(userRepository.findById(1L))
+                .thenReturn(Optional.of(mockUser));
 
         Assertions.assertThrows(AccessDeniedException.class, () -> userService.promoteToAdmin(1L, user));
     }
@@ -122,7 +122,7 @@ public class UserServiceImplTests {
         user.setRole(Role.ADMIN);
         Mockito.when(mockUser.getIsEnabled())
                 .thenReturn(false);
-        Mockito.when(userRepository.getUserById(1L))
+        Mockito.when(userRepository.findById(1L))
                 .thenReturn(Optional.of(mockUser));
 
         Assertions.assertThrows(AccessDeniedException.class, () -> userService.promoteToAdmin(1L, user));
@@ -137,7 +137,7 @@ public class UserServiceImplTests {
         userToPromote.setIsBlocked(true);
         userToPromote.setRole(Role.USER);
 
-        Mockito.when(userRepository.getUserById(1L))
+        Mockito.when(userRepository.findById(1L))
                 .thenReturn(Optional.of(userToPromote));
 
         userService.promoteToAdmin(1L, user);
@@ -213,7 +213,7 @@ public class UserServiceImplTests {
         dummyMappedUser.setUsername("vankicha");
 
         Mockito.when(userMapper.dtoToUser(userRegisterDto))
-                        .thenReturn(dummyMappedUser);
+                .thenReturn(dummyMappedUser);
 
         userService.create(userRegisterDto);
 
@@ -241,7 +241,7 @@ public class UserServiceImplTests {
         User targetUser = new User(1L, "target", "Target", "User", "pass123", Role.USER, "target@gmail.com", false, true);
         User currentUser = new User(2L, "current", "Current", "User", "pass123", Role.USER, "current@gmail.com", false, true);
 
-        Mockito.when(userRepository.getUserById(1L))
+        Mockito.when(userRepository.findById(1L))
                 .thenReturn(Optional.of(targetUser));
 
         Assertions.assertThrows(AccessDeniedException.class, () -> userService.delete(1L, currentUser));
@@ -254,7 +254,7 @@ public class UserServiceImplTests {
         User targetUser = new User(1L, "owner", "Owner", "User", "pass123", Role.USER, "owner@gmail.com", false, true);
         User currentUser = new User(1L, "owner", "Owner", "User", "pass123", Role.USER, "owner@gmail.com", false, true);
 
-        Mockito.when(userRepository.getUserById(1L))
+        Mockito.when(userRepository.findById(1L))
                 .thenReturn(Optional.of(targetUser));
 
         userService.delete(1L, currentUser);
@@ -271,7 +271,7 @@ public class UserServiceImplTests {
         User targetUser = new User(1L, "target", "Target", "User", "pass123", Role.USER, "target@gmail.com", false, true);
         User currentUser = new User(2L, "admin", "Admin", "User", "pass123", Role.ADMIN, "admin@gmail.com", false, true);
 
-        Mockito.when(userRepository.getUserById(1L))
+        Mockito.when(userRepository.findById(1L))
                 .thenReturn(Optional.of(targetUser));
 
         userService.delete(1L, currentUser);
