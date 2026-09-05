@@ -18,6 +18,7 @@ services:
       retries: 10
 
   app:
+    dns: [8.8.8.8, 1.1.1.1]
     build: .
     restart: unless-stopped
     depends_on:
