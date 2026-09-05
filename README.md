@@ -22,7 +22,7 @@ A secure Spring Boot REST API for managing a digital movie library, with role-ba
 
 ## Architecture & Design Decisions
 
-The reasoning behind the async OMDb integration, the RestClient-vs-WebClient trade-off, and the session-based auth model is documented separately in [ADR.md](./ADR.md) — worth a read if you want the "why," not just the "what."
+The reasoning behind the async OMDb integration, the RestClient-vs-WebClient trade-off, and the session-based auth model is documented separately in [ADR.md](docs/ADR.md) — worth a read if you want the "why," not just the "what."
 
 ## Getting Started
 
