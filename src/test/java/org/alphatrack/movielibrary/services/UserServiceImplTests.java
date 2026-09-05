@@ -34,8 +34,6 @@ public class UserServiceImplTests {
     @Mock
     private UserMapper userMapper;
 
-    @Mock
-    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private UserServiceImpl userService;
